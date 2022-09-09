@@ -1,0 +1,15 @@
+﻿  main.cpp
+c:\users\jade\downloads\01_c\include\sranipal_eyedatatype.h(139): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+c:\users\jade\downloads\01_c\include\sranipal_eyedatatype.h(139): warning C4800: 'uint64_t': forcing value to bool 'true' or 'false' (performance warning)
+c:\users\jade\downloads\01_c\include\sranipal_eyedatatype.h(211): warning C4091: 'typedef ': ignored on left of 'ViveSR::anipal::Eye::CombinedEyeData' when no variable is declared
+c:\users\jade\downloads\01_c\sranipal_sample\main.cpp(44): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+c:\users\jade\downloads\01_c\sranipal_sample\main.cpp(254): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+  SRanipal_Sample.vcxproj -> C:\Users\Jade\Downloads\01_C\x64\Debug\SRanipal_Sample.exe
+  SRanipal_Sample.vcxproj -> C:\Users\Jade\Downloads\01_C\x64\Debug\SRanipal_Sample.pdb (Full PDB)
+  ..\bin\libHTC_License.dll
+  ..\bin\nanomsg.dll
+  ..\bin\SRanipal.dll
+  ..\bin\SRWorks_Log.dll
+  ..\bin\ViveSR_Client.dll
+          5 file(s) copied.
+          1 file(s) copied.

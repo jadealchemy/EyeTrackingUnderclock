@@ -1,0 +1,44 @@
+# depslib dependency file v1.0
+1654937525 source:c:\users\jade\downloads\01_c\sranipal_sample\main.cpp
+	<stdio.h>
+	<signal.h>
+	<stdlib.h>
+	<thread>
+	"../include/SRanipal.h"
+	"../include/SRanipal_Eye.h"
+	"../include/SRanipal_Lip.h"
+	"../include/SRanipal_Enums.h"
+	"../include/SRanipal_NotRelease.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal.h
+	"ViveSR_Enums.h"
+	"SRanipal_Enums.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\vivesr_enums.h
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_enums.h
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_eye.h
+	"SRanipal_EyeData_v1.h"
+	"SRanipal_EyeData_v2.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_eyedata_v1.h
+	"SRanipal_EyeDataType.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_eyedatatype.h
+	<stdint.h>
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_eyedata_v2.h
+	"SRanipal_EyeDataType.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_lip.h
+	"SRanipal_LipData_v1.h"
+	"SRanipal_LipData_v2.h"
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_lipdata_v1.h
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_lipdata_v2.h
+
+1654936735 c:\users\jade\downloads\01_c\include\sranipal_notrelease.h
+	"SRanipal_EyeDataType.h"
+
