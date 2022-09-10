@@ -40,7 +40,6 @@ void streaming() {
 
 	int result = ViveSR::Error::WORK;
 	while (looping) {
-        Sleep(100);
 #ifndef UseEyeCallback || UseEyeCallback_v2
 		if (EnableEye) {
 			int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
@@ -62,9 +61,9 @@ void streaming() {
             if (result == ViveSR::Error::WORK) {
                 float *gaze = eye_data_v2.verbose_data.left.gaze_direction_normalized.elem_;
                 //printf("[Eye v2] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
-                Sleep(1000);
+                Sleep(100);
                 if (gaze[2] == 0) {
-                    if (howlong == 5) {
+                    if (howlong == 100) {
                     }
                     else {
                         howlong = howlong + 1;
@@ -75,13 +74,18 @@ void streaming() {
                     if (howlong == 0) {
                     }
                     else {
-                        howlong = howlong - 1;
+                        if (howlong >= 10) {
+                            howlong = howlong - 10;
+                        }
+                        else {
+                            howlong = howlong - howlong;
+                        }
                     }
                 }
 
-                if (howlong == 5) {
+                if (howlong == 100) {
                     if (clockspeedy != 1) {
-                        printf("Eyes Closed\n");
+                        printf("\nEyes Closed");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 50");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 50");
                         system("powercfg.exe -setactive SCHEME_MAX");
@@ -90,7 +94,7 @@ void streaming() {
                 }
                 if (howlong == 0) {
                     if (clockspeedy != 0) {
-                        printf("Eyes Open\n");
+                        printf("\nEyes Open");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
                         system("powercfg.exe -setactive SCHEME_MAX");
@@ -171,7 +175,7 @@ int main() {
 	printf("[4] Stop the thread.\n");
     printf("[5] Initial Eye v2 engine\n");
     printf("[6] Initial Lip v2 engine\n");
-    printf("\n\nEyetracking underclocking proof of concept.\nPress 5 then enter, then 3, then enter.\nYour PC should underclock after 5 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+    printf("\n\nEyetracking underclocking proof of concept.\nPress 5 then enter, then 3, then enter.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
 	char str = 0;
 	int error, id = NULL;   
 	while (true) {
