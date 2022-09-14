@@ -5,7 +5,6 @@
 #include <windows.h>
 #include "SRanipal.h"
 #include "SRanipal_Eye.h"
-#include "SRanipal_Lip.h"
 #include "SRanipal_Enums.h"
 #include "SRanipal_NotRelease.h"
 #pragma comment (lib, "SRanipal.lib")
@@ -17,50 +16,24 @@ using namespace ViveSR;
 int howlong;
 int clockspeedy;
 
-//#define UseEyeCallback
-//#define UseEyeCallback_v2
-
 bool GetBitMaskValidation(uint64_t mask, ViveSR::anipal::Eye::SingleEyeDataValidity SingleEyeDataType);
 std::string CovertErrorCode(int error);
 
 std::thread *t = nullptr;
-bool EnableEye = false, EnableEyeV2 = false;
-bool EnableLip = false, EnableLipV2 = false;
-bool looping = false;
+bool EnableEyeV2 = true;
+bool looping = true;
 void streaming() {
     // Eye 
-	ViveSR::anipal::Eye::EyeData eye_data;
     ViveSR::anipal::Eye::EyeData_v2 eye_data_v2;
-    // Lip
-	char lip_image[800 * 400];
-	ViveSR::anipal::Lip::LipData lip_data;
-    ViveSR::anipal::Lip::LipData_v2 lip_data_v2;
-	lip_data.image = lip_image;
-    lip_data_v2.image = lip_image;
 
 	int result = ViveSR::Error::WORK;
 	while (looping) {
-#ifndef UseEyeCallback || UseEyeCallback_v2
-		if (EnableEye) {
-			int result = ViveSR::anipal::Eye::GetEyeData(&eye_data);
-			if (result == ViveSR::Error::WORK) {
-				float *gaze = eye_data.verbose_data.left.gaze_direction_normalized.elem_;
-				printf("[Eye] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
-				bool needCalibration = false;
-				int error = ViveSR::anipal::Eye::IsUserNeedCalibration(&needCalibration);
-				if (needCalibration) {
-					printf("[Eye] Need to do calibration\n");
-				}
-				else {
-					printf("[Eye] Don't need to do calibration\n");
-				}
-			}
-		}
         if (EnableEyeV2) {
             int result = ViveSR::anipal::Eye::GetEyeData_v2(&eye_data_v2);
             if (result == ViveSR::Error::WORK) {
                 float *gaze = eye_data_v2.verbose_data.left.gaze_direction_normalized.elem_;
                 //printf("[Eye v2] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
+                
                 Sleep(100);
                 if (gaze[2] == 0) {
                     if (howlong == 100) {
@@ -85,178 +58,106 @@ void streaming() {
 
                 if (howlong == 100) {
                     if (clockspeedy != 1) {
-                        printf("\nEyes Closed");
+                        system("CLS");
+                        
+
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 50");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 50");
                         system("powercfg.exe -setactive SCHEME_MAX");
+
+
+                        printf("Status: Low Speed\n\n");
+                        printf("Press 0 then enter to exit safely.\n\n");
+                        printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+                        printf("\nWait for key event :");
                         clockspeedy = 1;
                     }
                 }
                 if (howlong == 0) {
                     if (clockspeedy != 0) {
-                        printf("\nEyes Open");
+                        system("CLS");
+
+
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
                         system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
                         system("powercfg.exe -setactive SCHEME_MAX");
+
+                        printf("Status: High Speed\n\n");
+                        printf("Press 0 then enter to exit safely.\n\n");
+                        printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+                        printf("\nWait for key event :");
                         clockspeedy = 0;
                     }
                 }
             }
         }
-#endif
-		if (EnableLip) {
-			result = ViveSR::anipal::Lip::GetLipData(&lip_data);
-            if (result == ViveSR::Error::WORK) {
-                float *weightings = lip_data.prediction_data.blend_shape_weight;
-                printf("Lip: \n");
-                for (int i = 0; i < 27; i++) {
-                    printf("%.2f ", weightings[i]);
-                }
-                printf("\n");
-            }
-		}
-        if (EnableLipV2) {
-            result = ViveSR::anipal::Lip::GetLipData_v2(&lip_data_v2);
-            if (result == ViveSR::Error::WORK) {
-                float *weightings = lip_data_v2.prediction_data.blend_shape_weight;
-                printf("Lip Ver2: \n");
-                for (int i = 0; i < ViveSR::anipal::Lip::blend_shape_nums; i++) {
-                    printf("%.2f ", weightings[i]);
-                }
-                printf("\n");
-            }
-        }
 	}
 }
 
-#ifdef UseEyeCallback
-void TestEyeCallback(ViveSR::anipal::Eye::EyeData const &eye_data) {
-    const float *gaze = eye_data.verbose_data.left.gaze_direction_normalized.elem_;
-    printf("[Eye callback] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
-    bool needCalibration = false;
-    int error = ViveSR::anipal::Eye::IsUserNeedCalibration(&needCalibration);
-    if (needCalibration) {
-        printf("[Eye callback] Need to do calibration\n");
-    }
-    else {
-        printf("[Eye callback] Don't need to do calibration\n");
-    }
-    float openness = eye_data.verbose_data.right.eye_openness;
-    printf("[Eye callback] Openness %.2f\n", openness);
-}
-#endif
-#ifdef UseEyeCallback_v2
-void TestEyeCallback_v2(ViveSR::anipal::Eye::EyeData_v2 const &eye_data) {
-    const float *gaze = eye_data.verbose_data.left.gaze_direction_normalized.elem_;
-    printf("[Eye callback v2] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
-    bool needCalibration = false;
-    int error = ViveSR::anipal::Eye::IsUserNeedCalibration(&needCalibration);
-    if (needCalibration) {
-        printf("[Eye callback v2] Need to do calibration\n");
-    }
-    else {
-        printf("[Eye callback v2] Don't need to do calibration\n");
-    }
-    const float wide_left = eye_data.expression_data.left.eye_wide;
-    const float wide_right = eye_data.expression_data.right.eye_wide;
-    printf("[Eye callback v2] Wide: %.2f %.2f\n", wide_left, wide_right);
-}
-#endif
-
 int main() {
-	char *version = "";
-	ViveSR::anipal::SRanipal_GetVersion(version);
-	printf("SRanipal Sample (version: %s)\n\nPlease refer the below hotkey list to try APIs.\n", version);
-	printf("[`] Exit this program.\n");
-	printf("[0] Release all anipal engines.\n");
-	printf("[1] Initial Eye engine\n");
-	printf("[2] Initial Lip engine\n");
-	printf("[3] Launch a thread to query data.\n");
-	printf("[4] Stop the thread.\n");
-    printf("[5] Initial Eye v2 engine\n");
-    printf("[6] Initial Lip v2 engine\n");
-    printf("\n\nEyetracking underclocking proof of concept.\nPress 5 then enter, then 3, then enter.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
-	char str = 0;
-	int error, id = NULL;   
+    int error, id = NULL;
+    printf("Initializing eye tracking...\n");
+    error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2, NULL);
+    if (error == ViveSR::Error::WORK) {
+        EnableEyeV2 = true;
+        printf("Successfully initialized eye tracking.\n");
+    }
+    else {
+        printf("Fail to initialize version2 Eye engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
+        return -1;
+    }
+
+//    if (t == nullptr) {
+        t = new std::thread(streaming);
+        if (t)   looping = true;
+//    }
+
+    Sleep(1500);
+    system("CLS");
+
+    printf("Status: No interaction yet.\n\n");
+	printf("Press 0 then enter to exit safely.\n\n");
+    printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+	char str = 0;  
 	while (true) {
 		if (str != '\n' && str != EOF) { printf("\nWait for key event :"); }
-		str = getchar();
-		if (str == '`') break;
-		else if (str == '0') {
-#ifdef UseEyeCallback
-            ViveSR::anipal::Eye::UnregisterEyeDataCallback(TestEyeCallback);
-#endif
-#ifdef UseEyeCallback_v2
-            ViveSR::anipal::Eye::UnregisterEyeDataCallback_v2(TestEyeCallback_v2);
-#endif
-			error = ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE);
-            error = ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
-			error = ViveSR::anipal::Release(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP);
-            error = ViveSR::anipal::Release(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP_V2);
-			printf("Successfully release all anipal engines.\n");
-			EnableEye = EnableLip = false;
-		}
+		
+        str = getchar();
+
+        if (str == '0') break;
+        
+        
+
 		else if (str == '1') {
-			error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE, NULL);
-			if (error == ViveSR::Error::WORK) {
-                EnableEye = true; printf("Successfully initialize Eye engine.\n");
-#ifdef UseEyeCallback
-                ViveSR::anipal::Eye::RegisterEyeDataCallback(TestEyeCallback);
-#endif
-            }
-            else if (error == ViveSR::Error::RUNTIME_NOT_FOUND) printf("please follows SRanipal SDK guide to install SR_Runtime first\n");
-            else if (error == ViveSR::Error::NOT_SUPPORT_EYE_TRACKING) printf("This HMD do not have eye tracking feature!\n");
-			else printf("Fail to initialize Eye engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-		}
-		else if (str == '2') {
-			error = ViveSR::anipal::Initial(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP, NULL);
-			if (error == ViveSR::Error::WORK) { EnableLip = true; printf("Successfully initialize Lip engine.\n"); }
-			else printf("Fail to initialize Lip engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-		}
-		else if (str == '3') {
             if (t == nullptr) {
                 t = new std::thread(streaming);
                 if(t)   looping = true;
             }
 		}
-		else if (str == '4') {
+		
+        else if (str == '2') {
             looping = false;
 			if (t == nullptr) continue;
 			t->join();
 			delete t;
 			t = nullptr;
 		}
-        else if (str == '5') {
-            error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2, NULL);
-            if (error == ViveSR::Error::WORK) {
-                EnableEyeV2 = true;
-                printf("Successfully initialize version2 Eye engine.\n");
-#ifdef UseEyeCallback_v2
-                ViveSR::anipal::Eye::RegisterEyeDataCallback_v2(TestEyeCallback_v2);
-#endif
-            }
-            else printf("Fail to initialize version2 Eye engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-        }
-        else if (str == '6') {
-            error = ViveSR::anipal::Initial(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP_V2, NULL);
-            if (error == ViveSR::Error::WORK) { 
-                EnableLipV2 = true;
-                printf("Successfully initialize version2 Lip engine.\n"); 
-            }
-            else printf("Fail to initialize version2 Lip engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-        }
+
 	}
-	ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE);
-	ViveSR::anipal::Release(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP);
+    looping = false;
     ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
-    ViveSR::anipal::Release(ViveSR::anipal::Lip::ANIPAL_TYPE_LIP_V2);
+    system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+    system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+    system("powercfg.exe -setactive SCHEME_MAX");
+    system("CLS");
+    printf("Clock speeds should be restored and program will now exit.");
+
+
     return 0;
 }
 
-// For test
-bool GetBitMaskValidation(uint64_t mask, ViveSR::anipal::Eye::SingleEyeDataValidity SingleEyeDataType) {
-    return mask & (1 << (int)SingleEyeDataType) > 0;
-}
+
+
 
 std::string CovertErrorCode(int error) {
     std::string result = "";
