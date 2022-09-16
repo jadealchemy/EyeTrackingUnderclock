@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <thread>
 #include <windows.h>
+#include <fstream>
+#include <string>
 #include "SRanipal.h"
 #include "SRanipal_Eye.h"
 #include "SRanipal_Enums.h"
@@ -15,6 +17,14 @@ using namespace ViveSR;
 
 int howlong;
 int clockspeedy;
+
+int cpuspeedmin;
+
+
+using namespace std;
+
+string cmd1;
+string cmd2;
 
 bool GetBitMaskValidation(uint64_t mask, ViveSR::anipal::Eye::SingleEyeDataValidity SingleEyeDataType);
 std::string CovertErrorCode(int error);
@@ -61,8 +71,8 @@ void streaming() {
                         system("CLS");
                         
 
-                        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 50");
-                        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 50");
+                        system(cmd1.c_str());
+                        system(cmd2.c_str());
                         system("powercfg.exe -setactive SCHEME_MAX");
 
 
@@ -95,6 +105,35 @@ void streaming() {
 }
 
 int main() {
+    printf("Reading config files...\n");
+    fstream cpumin;
+    cpumin.open("config/cpuspeedmin.txt", ios::in);
+
+    if (cpumin.is_open() == false) {
+        printf("Error reading 'cpuspeedmin.txt'!! Does the file exist?\n\n");
+        Sleep(10000);
+        return 2;
+    }
+
+    cpumin >> cpuspeedmin;
+
+    if (cpuspeedmin == 0) {
+        printf("Something is wrong with 'cpuspeedmin.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
+        Sleep(10000);
+        return 3;
+    }
+
+    cmd1 = "powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN ";
+    cmd2 = "powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX ";
+
+    cmd1 += std::to_string(cpuspeedmin);
+    cmd2 += std::to_string(cpuspeedmin);
+
+
+    Sleep(100);
+    printf("Config variables set.\n");
+    Sleep(100);
+
     int error, id = NULL;
     printf("Initializing eye tracking...\n");
     error = ViveSR::anipal::Initial(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2, NULL);
@@ -104,17 +143,14 @@ int main() {
     }
     else {
         printf("Fail to initialize version2 Eye engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-        return -1;
+        Sleep(10000);
+        return 1;
     }
 
-//    if (t == nullptr) {
-        t = new std::thread(streaming);
-        if (t)   looping = true;
-//    }
+    t = new std::thread(streaming);
 
     Sleep(1500);
     system("CLS");
-
     printf("Status: No interaction yet.\n\n");
 	printf("Press 0 then enter to exit safely.\n\n");
     printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
