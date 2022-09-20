@@ -5,3 +5,6 @@ Uses vive eye tracking to underclock pc after eyes have been closed for so long.
 Todo list:
 * GPU Underclocking
 * Config file
+* Showdown after X amount of time.
+* Change monitor sleep time to X in powerplan.
+* Change drive spindown time to X in powerplan.
