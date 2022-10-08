@@ -1,0 +1,14 @@
+﻿  Generating code
+  2 of 238 functions ( 0.8%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  SRanipal_Sample.vcxproj -> C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\x64\Release\SRanipal_Sample.exe
+  SRanipal_Sample.vcxproj -> C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\x64\Release\SRanipal_Sample.pdb (Full PDB)
+  ..\bin\libHTC_License.dll
+  ..\bin\nanomsg.dll
+  ..\bin\SRanipal.dll
+  ..\bin\SRWorks_Log.dll
+  ..\bin\ViveSR_Client.dll
+          5 file(s) copied.
+          1 file(s) copied.

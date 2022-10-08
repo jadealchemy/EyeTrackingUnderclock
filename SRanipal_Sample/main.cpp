@@ -9,6 +9,7 @@
 #include "SRanipal_Eye.h"
 #include "SRanipal_Enums.h"
 #include "SRanipal_NotRelease.h"
+#include <iostream>
 #pragma comment (lib, "SRanipal.lib")
 using namespace ViveSR;
 
@@ -16,9 +17,12 @@ using namespace ViveSR;
 #define DisableEyeTracking 0
 
 int howlong;
-int clockspeedy;
+int clockstate;
+int changestate;
 
 int cpuspeedmin;
+int fasttime;
+int slowtime;
 
 
 using namespace std;
@@ -43,31 +47,49 @@ void streaming() {
             if (result == ViveSR::Error::WORK) {
                 float *gaze = eye_data_v2.verbose_data.left.gaze_direction_normalized.elem_;
                 //printf("[Eye v2] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
-                
+
                 Sleep(100);
-                if (gaze[2] == 0) {
-                    if (howlong == 100) {
-                    }
-                    else {
+                
+
+                if (clockstate == 0) {
+                    if (gaze[2] == 0) {
                         howlong = howlong + 1;
                     }
 
-                }
-                if (gaze[2] != 0) {
-                    if (howlong == 0) {
-                    }
-                    else {
-                        if (howlong >= 10) {
-                            howlong = howlong - 10;
-                        }
-                        else {
-                            howlong = howlong - howlong;
-                        }
+                    if (gaze[2] != 0) {
+                        howlong = howlong - 1;
                     }
                 }
 
-                if (howlong == 100) {
-                    if (clockspeedy != 1) {
+
+
+
+                if (clockstate == 1) {
+                    if (gaze[2] != 0) {
+                        howlong = howlong + 1;
+                    }
+
+                    if (gaze[2] == 0) {
+                        howlong = howlong - 1;
+                    }
+                }
+
+
+                if ((howlong == slowtime) && (clockstate == 0)) {
+                    howlong = 0;
+                    changestate = 1;
+                    clockstate = 1;
+                }
+
+                if ((howlong == fasttime) && (clockstate == 1)) {
+                    howlong = 0;
+                    changestate = 1;
+                    clockstate = 0;
+                }
+
+                
+                if (changestate == 1) {
+                    if (clockstate == 1) {
                         system("CLS");
                         
 
@@ -78,13 +100,12 @@ void streaming() {
 
                         printf("Status: Low Speed\n\n");
                         printf("Press 0 then enter to exit safely.\n\n");
-                        printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+                        printf("Eyetracking underclocking proof of concept.\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
                         printf("\nWait for key event :");
-                        clockspeedy = 1;
+                        
                     }
-                }
-                if (howlong == 0) {
-                    if (clockspeedy != 0) {
+
+                    if (clockstate == 0) {
                         system("CLS");
 
 
@@ -94,11 +115,13 @@ void streaming() {
 
                         printf("Status: High Speed\n\n");
                         printf("Press 0 then enter to exit safely.\n\n");
-                        printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+                        printf("Eyetracking underclocking proof of concept.\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
                         printf("\nWait for key event :");
-                        clockspeedy = 0;
+                        
                     }
+                    changestate = 0;
                 }
+                
             }
         }
 	}
@@ -130,7 +153,47 @@ int main() {
     cmd2 += std::to_string(cpuspeedmin);
 
 
-    Sleep(100);
+
+
+    fstream hightime;
+    hightime.open("config/hightime.txt", ios::in);
+
+    if (hightime.is_open() == false) {
+        printf("Error reading 'hightime.txt'!! Does the file exist?\n\n");
+        Sleep(10000);
+        return 4;
+    }
+
+    hightime >> fasttime;
+
+    if (fasttime == 0) {
+        printf("Something is wrong with 'hightime.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
+        Sleep(10000);
+        return 5;
+    }
+
+
+
+
+
+    fstream lowtime;
+    lowtime.open("config/lowtime.txt", ios::in);
+
+    if (lowtime.is_open() == false) {
+        printf("Error reading 'lowtime.txt'!! Does the file exist?\n\n");
+        Sleep(10000);
+        return 6;
+    }
+
+    lowtime >> slowtime;
+
+    if (slowtime == 0) {
+        printf("Something is wrong with 'slowtime.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
+        Sleep(10000);
+        return 7;
+    }
+
+    Sleep(10000);
     printf("Config variables set.\n");
     Sleep(100);
 
@@ -153,7 +216,7 @@ int main() {
     system("CLS");
     printf("Status: No interaction yet.\n\n");
 	printf("Press 0 then enter to exit safely.\n\n");
-    printf("Eyetracking underclocking proof of concept.\nYour PC should underclock after 10 seconds of your left eye being closed or untrackable\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
+    printf("Eyetracking underclocking proof of concept.\nUse included 'Fix clock speed.bat' if your clockspeeds get stuck underclocked.\n\n");
 	char str = 0;  
 	while (true) {
 		if (str != '\n' && str != EOF) { printf("\nWait for key event :"); }
