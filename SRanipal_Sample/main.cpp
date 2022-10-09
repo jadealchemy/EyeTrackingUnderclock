@@ -16,6 +16,8 @@ using namespace ViveSR;
 #define EnableEyeTracking 1
 #define DisableEyeTracking 0
 
+
+
 int howlong;
 int clockstate;
 int changestate;
@@ -23,6 +25,61 @@ int changestate;
 int cpuspeedmin;
 int fasttime;
 int slowtime;
+
+bool looping = true;
+
+BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
+{
+    switch (fdwCtrlType)
+    {
+        // Handle the CTRL-C signal.
+    case CTRL_C_EVENT:
+        looping = false;
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+        system("powercfg.exe -setactive SCHEME_MAX");
+        ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
+        return 0;
+
+        // CTRL-CLOSE: confirm that the user wants to exit.
+    case CTRL_CLOSE_EVENT:
+        looping = false;
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+        system("powercfg.exe -setactive SCHEME_MAX");
+        ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
+        return 0;
+
+        // Pass other signals to the next handler.
+    case CTRL_BREAK_EVENT:
+        looping = false;
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+        system("powercfg.exe -setactive SCHEME_MAX");
+        ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
+        return 0;
+
+    case CTRL_LOGOFF_EVENT:
+        looping = false;
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+        system("powercfg.exe -setactive SCHEME_MAX");
+        ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
+        return 0;
+
+    case CTRL_SHUTDOWN_EVENT:
+        looping = false;
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMIN 100");
+        system("powercfg -setacvalueindex SCHEME_MAX SUB_PROCESSOR PROCTHROTTLEMAX 100");
+        system("powercfg.exe -setactive SCHEME_MAX");
+        ViveSR::anipal::Release(ViveSR::anipal::Eye::ANIPAL_TYPE_EYE_V2);
+        return 0;
+
+    default:
+        return FALSE;
+    }
+}
+
 
 
 using namespace std;
@@ -35,7 +92,7 @@ std::string CovertErrorCode(int error);
 
 std::thread *t = nullptr;
 bool EnableEyeV2 = true;
-bool looping = true;
+
 void streaming() {
     // Eye 
     ViveSR::anipal::Eye::EyeData_v2 eye_data_v2;
@@ -49,7 +106,7 @@ void streaming() {
                 //printf("[Eye v2] Gaze: %.2f %.2f %.2f\n", gaze[0], gaze[1], gaze[2]);
 
                 Sleep(100);
-                
+                changestate = 0;
 
                 if (clockstate == 0) {
                     if (gaze[2] == 0) {
@@ -119,7 +176,7 @@ void streaming() {
                         printf("\nWait for key event :");
                         
                     }
-                    changestate = 0;
+                    
                 }
                 
             }
@@ -127,7 +184,10 @@ void streaming() {
 	}
 }
 
+
+
 int main() {
+    SetConsoleCtrlHandler(CtrlHandler, TRUE);
     printf("Reading config files...\n");
     fstream cpumin;
     cpumin.open("config/cpuspeedmin.txt", ios::in);
@@ -193,7 +253,7 @@ int main() {
         return 7;
     }
 
-    Sleep(10000);
+    Sleep(1000);
     printf("Config variables set.\n");
     Sleep(100);
 
