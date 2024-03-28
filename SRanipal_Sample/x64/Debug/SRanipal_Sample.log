@@ -1,9 +1,11 @@
 ﻿  main.cpp
-c:\users\jade\documents\github\eyetrackingunderclock\include\sranipal_eyedatatype.h(139): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
-c:\users\jade\documents\github\eyetrackingunderclock\include\sranipal_eyedatatype.h(139): warning C4800: 'uint64_t': forcing value to bool 'true' or 'false' (performance warning)
-c:\users\jade\documents\github\eyetrackingunderclock\include\sranipal_eyedatatype.h(211): warning C4091: 'typedef ': ignored on left of 'ViveSR::anipal::Eye::CombinedEyeData' when no variable is declared
+C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\include\SRanipal_EyeDataType.h(139,32): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+  (compiling source file 'main.cpp')
+  
+C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\include\SRanipal_EyeDataType.h(211,5): warning C4091: 'typedef ': ignored on left of 'ViveSR::anipal::Eye::CombinedEyeData' when no variable is declared
+  (compiling source file 'main.cpp')
+  
   SRanipal_Sample.vcxproj -> C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\x64\Debug\SRanipal_Sample.exe
-  SRanipal_Sample.vcxproj -> C:\Users\Jade\Documents\GitHub\EyeTrackingUnderclock\x64\Debug\SRanipal_Sample.pdb (Full PDB)
   ..\bin\libHTC_License.dll
   ..\bin\nanomsg.dll
   ..\bin\SRanipal.dll
