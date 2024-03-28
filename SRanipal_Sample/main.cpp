@@ -223,7 +223,7 @@ int main() {
 
     if (hightime.is_open() == false) {
         printf("Error reading 'hightime.txt'!! Does the file exist?\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 4;
     }
 
@@ -231,7 +231,7 @@ int main() {
 
     if (fasttime == 0) {
         printf("Something is wrong with 'hightime.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 5;
     }
 
@@ -244,7 +244,7 @@ int main() {
 
     if (lowtime.is_open() == false) {
         printf("Error reading 'lowtime.txt'!! Does the file exist?\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 6;
     }
 
@@ -252,7 +252,7 @@ int main() {
 
     if (slowtime == 0) {
         printf("Something is wrong with 'slowtime.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 7;
     }
 
@@ -267,7 +267,7 @@ int main() {
 
     if (openpowermenu.is_open() == false) {
         printf("Error reading 'openpowermenu.txt'!! Does the file exist?\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 8;
     }
 
@@ -275,20 +275,20 @@ int main() {
 
     if (powermenu == 0) {
         printf("Something is wrong with 'openpowermenu.txt'!! Did you accidentally put in something other than a number?\n'0' is also invalid.\n\n");
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 9;
     }
 
 
-    Sleep(1000);
+    this_thread::sleep_for(chrono::milliseconds(1000));;
     printf("Config variables set.\n");
-    Sleep(100);
+    this_thread::sleep_for(chrono::milliseconds(100));
 
     if (powermenu == 1)
     {
         system("powercfg.cpl");
         printf("Power Options panel opened\n");
-        Sleep(400);
+        this_thread::sleep_for(chrono::milliseconds(400));
     }
     
         
@@ -301,11 +301,11 @@ int main() {
     }
     else {
         printf("Fail to initialize version2 Eye engine. please refer the code %d %s.\n", error, CovertErrorCode(error).c_str());
-        Sleep(10000);
+        this_thread::sleep_for(chrono::milliseconds(10000));
         return 1;
     }
 
-    Sleep(1500);
+    this_thread::sleep_for(chrono::milliseconds(1500));
     system("CLS");
     printf("Status: No interaction yet.\n\n");
     printf("Eyetracking underclocking proof of concept.\nPress 0 then enter to exit safely.\n\n");
